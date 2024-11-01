@@ -16,10 +16,39 @@
       </el-icon>
     </el-button>
   </el-col>
+  <el-col class="actions-container-right" :gutter="2">
+    <el-row>
+      <div class="zooms">
+        <el-tooltip content="Zoomer" placement="left">
+          <el-button @click="zoom">
+            <el-icon>
+              <el-icon><ZoomIn /></el-icon>
+            </el-icon>
+          </el-button>
+        </el-tooltip>
+        <el-tooltip content="Dézoomer" placement="left">
+          <el-button @click="unZoom">
+            <el-icon>
+              <el-icon><ZoomOut /></el-icon>
+            </el-icon>
+          </el-button>
+        </el-tooltip>
+      </div>
+    </el-row>
+    <el-row>
+      <el-tooltip content="Centrer sur la position actuelle" placement="left">
+        <el-button circle @click="centerOnCurrentPosition">
+          <el-icon>
+            <el-icon><Aim /></el-icon>
+          </el-icon>
+        </el-button>
+      </el-tooltip>
+    </el-row>
+  </el-col>
 </template>
 
 <script setup lang="ts">
-import { ArrowRight } from "@element-plus/icons-vue";
+import { ArrowRight, Aim, ZoomIn, ZoomOut } from "@element-plus/icons-vue";
 import { Point } from "ol/geom";
 import { fromLonLat } from "ol/proj";
 import { ref } from "vue";
@@ -72,6 +101,32 @@ const moveToPosition = (selectedPosition: AutoComplete) => {
   search.value = "";
   autocomplete.value?.blur();
 };
+
+const centerOnCurrentPosition = () => {
+  if (mapStore.currentPosition) {
+    const pointToFocus = new Point(mapStore.currentPosition);
+
+    fitExtend(pointToFocus, "housenumber");
+  }
+};
+
+const zoom = () => {
+  const maxZoom = mapStore.map?.getView().getMaxZoom() ?? 1;
+  let currentZoom = mapStore.map?.getView().getZoom() ?? 1;
+
+  if (currentZoom < maxZoom) currentZoom++;
+
+  mapStore.map?.getView().setZoom(currentZoom);
+};
+
+const unZoom = () => {
+  const minZoom = mapStore.map?.getView().getMinZoom() ?? 1;
+  let currentZoom = mapStore.map?.getView().getZoom() ?? 1;
+
+  if (currentZoom > minZoom) currentZoom--;
+
+  mapStore.map?.getView().setZoom(currentZoom);
+};
 </script>
 
 <style lang="scss">
@@ -99,6 +154,41 @@ const moveToPosition = (selectedPosition: AutoComplete) => {
 
   .el-input__wrapper {
     border-radius: 5px;
+  }
+}
+
+.actions-container-right {
+  position: absolute;
+  z-index: 1000;
+  right: 15px;
+  bottom: 25px;
+
+  transform: translate(-50%, 0);
+
+  .el-input__wrapper {
+    border-radius: 5px;
+  }
+
+  .el-row {
+    margin-bottom: 10px;
+    justify-content: center;
+  }
+
+  .zooms {
+    .el-button {
+      margin: 0;
+
+      &:first-child {
+        border-radius: 10px 10px 0px 0px;
+      }
+
+      &:last-child {
+        border-radius: 0px 0px 10px 10px;
+      }
+    }
+
+    display: flex;
+    flex-direction: column;
   }
 }
 </style>
