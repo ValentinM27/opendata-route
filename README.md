@@ -1,5 +1,20 @@
-# Vue 3 + TypeScript + Vite
+# opendata-route
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Le but de ce projet est de proposer un outil pour tracer des itinéraires en utilisant les diverses api mise à disposition par l'état.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## API consommées
+
+- [API Adresse](https://adresse.data.gouv.fr/api-doc/adresse#search)
+- [Géoplateforme: Service d'itinéraire et d'isochrone](https://www.geoportail.gouv.fr/depot/swagger/itineraire.html)
+
+## Technologies
+
+- [VueJs (vite)](https://vite.dev/)
+- [Openlayers](https://openlayers.org/doc/)
+
+## Lancer le projet
+
+```sh
+npm i
+npm run dev
+```
