@@ -5,6 +5,7 @@
       :fetch-suggestions="querySearch"
       clearable
       placeholder="Rechercher une adresse"
+      @select="moveToPosition"
     />
   </el-col>
   <el-col class="actions-container-left">
@@ -22,14 +23,17 @@ import { useToolbarStore } from "../stores/ToolbarStore";
 import { useMapStore } from "../stores/MapStore";
 import { ref } from "vue";
 import { getAdresses } from "../services/geolocalisation";
-import { Address } from "../types/geolocalisation";
+import { Feature } from "../types/geolocalisation";
+import { Point } from "ol/geom";
+import { fitExtend } from "../services/map";
+import { fromLonLat } from "ol/proj";
 
 const toolbarStore = useToolbarStore();
 const mapStore = useMapStore();
 
 type AutoComplete = {
   value: string;
-  adresse: Address;
+  feature: Feature;
 };
 
 const search = ref("");
@@ -40,12 +44,12 @@ const openToolbar = () => {
 
 const querySearch = async (q: string, cb: any) => {
   if (q.length > 3) {
-    const adresses: Address[] = await getAdresses(q, mapStore.currentPosition!);
+    const features: Feature[] = await getAdresses(q, mapStore.currentPosition!);
 
-    const autocompleteContent: AutoComplete[] = adresses.map((adresse) => {
+    const autocompleteContent: AutoComplete[] = features.map((feature) => {
       return {
-        value: adresse.label,
-        adresse: { ...adresse },
+        value: feature.properties.label,
+        feature: { ...feature },
       };
     });
 
@@ -53,6 +57,14 @@ const querySearch = async (q: string, cb: any) => {
   } else {
     cb([]);
   }
+};
+
+const moveToPosition = (selectedPosition: AutoComplete) => {
+  const pointToFocus = new Point(
+    fromLonLat(selectedPosition.feature.geometry.coordinates)
+  );
+
+  fitExtend(pointToFocus, selectedPosition.feature.properties.type);
 };
 </script>
 

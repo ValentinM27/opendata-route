@@ -6,6 +6,7 @@ import { transform } from "ol/proj";
 import {
   Address,
   ApiAdressResponse,
+  Feature,
   GeoportailRouteResponse,
   Route,
 } from "../types/geolocalisation";
@@ -84,18 +85,18 @@ export const getAdresseReverse = async (
 export const getAdresses = async (
   q: string,
   coordinates: Coordinate
-): Promise<Address[]> => {
+): Promise<Feature[]> => {
   const [lon, lat] = transform(coordinates, "EPSG:3857", "EPSG:4326");
 
   const res = await get<ApiAdressResponse>(
     `https://api-adresse.data.gouv.fr/search/?q=${q}&lat=${lat}&lon=${lon}`
   );
 
+  console.log(res);
+
   if (res.features.length === 0) {
-    return Array<Address>();
+    return Array<Feature>();
   }
 
-  const adresse: Address[] = res.features.map((feat) => feat.properties);
-
-  return adresse;
+  return res.features;
 };

@@ -15,7 +15,7 @@ import {
   getCurrentLongitudeLatitude,
   getRoute,
 } from "./geolocalisation";
-import { locationMarkerStyle, outerRingStyle } from "./style";
+import { locationMarkerStyle, outerRingStyle, redLineStyle } from "./style";
 
 import { useMapStore } from "../stores/MapStore";
 import { useRouteStore } from "../stores/RouteStore";
@@ -124,6 +124,7 @@ const drawRoute = async () => {
   const lineString = new LineString(route.coordinates);
 
   const feature = new Feature(lineString);
+  feature.setStyle([redLineStyle]);
 
   const layer = getOrCreateLayer("route-layer");
 
@@ -135,4 +136,22 @@ const drawRoute = async () => {
   }
 
   vectorSource.addFeature(feature);
+};
+
+const zoomLevels = {
+  housenumber: 17,
+  street: 15,
+  locality: 13,
+  municipality: 11,
+};
+
+export const fitExtend = (point: Point, type: string) => {
+  const zoomLevel = zoomLevels[type as keyof typeof zoomLevels] || 12;
+  const view = useMapStore().map?.getView();
+
+  if (view && point) {
+    view.fit(point, {
+      maxZoom: zoomLevel,
+    });
+  }
 };

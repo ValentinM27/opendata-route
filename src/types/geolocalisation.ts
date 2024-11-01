@@ -18,10 +18,18 @@ export type Address = {
   distance: number;
 };
 
+export type Geometry = {
+  type: string;
+  coordinates: Coordinate;
+};
+
+export type Feature = {
+  geometry: Geometry;
+  properties: Address;
+};
+
 export type ApiAdressResponse = {
-  features: {
-    properties: Address;
-  }[];
+  features: Feature[];
 };
 
 export type Route = {
