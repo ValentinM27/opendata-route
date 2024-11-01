@@ -86,6 +86,17 @@ const getOrCreateLayer = <T extends VectorLayer & BaseLayer>(
   return newLayer;
 };
 
+const deleteLayer = (name: string) => {
+  const currentLayer = useMapStore()
+    .map?.getLayers()
+    .getArray()
+    .find((layer) => layer.get("name") == name);
+
+  if (currentLayer) {
+    useMapStore().map?.removeLayer(currentLayer);
+  }
+};
+
 const handleRightClick = (map: Map) => {
   map.on("singleclick", (event) => {
     setPoint(event.coordinate);
@@ -154,4 +165,10 @@ export const fitExtend = (point: Point, type: string) => {
       maxZoom: zoomLevel,
     });
   }
+};
+
+export const clearRoute = () => {
+  useRouteStore().points = [];
+  deleteLayer("route-layer");
+  deleteLayer("route-points-layer");
 };

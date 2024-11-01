@@ -11,13 +11,29 @@
         {{ point.get("adresse-label") }}
       </li>
     </ul>
+
+    <el-button
+      type="danger"
+      :icon="Delete"
+      @click="handleClearRoute"
+      v-if="routeStore.points.length > 0"
+    >
+      Réinitialiser
+    </el-button>
   </el-drawer>
 </template>
 
 <script setup lang="ts">
 import { useToolbarStore } from "../stores/ToolbarStore";
 import { useRouteStore } from "../stores/RouteStore";
+import { clearRoute } from "../services/map";
+
+import { Delete } from "@element-plus/icons-vue";
 
 const toolbarStore = useToolbarStore();
 const routeStore = useRouteStore();
+
+const handleClearRoute = () => {
+  clearRoute();
+};
 </script>
