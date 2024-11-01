@@ -10,6 +10,13 @@ import VectorSource from "ol/source/Vector";
 
 import { getCurrentLongitudeLatitude, getAdresse } from "./geolocalisation";
 import { locationMarkerStyle, outerRingStyle } from "./style";
+import { Address } from "../types/geolocalisation";
+import { useMapStore } from "../stores/MapStore";
+import BaseLayer from "ol/layer/Base";
+import { useRouteStore } from "../stores/RouteStore";
+
+const mapStore = useMapStore();
+const routeStore = useRouteStore();
 
 export const setCurrentPosition = async (map: Map, position: Coordinate) => {
   const point = new Point(position);
@@ -24,7 +31,7 @@ export const setCurrentPosition = async (map: Map, position: Coordinate) => {
   const vectorLayer = new VectorLayer({
     source: vectorSource,
     properties: {
-      name: "current-location",
+      name: "current-location-layer",
     },
   });
 
@@ -49,8 +56,31 @@ export const initMap = async () => {
     controls: [],
   });
 
+  mapStore.map = map;
+
   setCurrentPosition(map, currentLongLat);
   handleRightClick(map);
+};
+
+const getOrCreateLayer = <T extends VectorLayer & BaseLayer>(
+  name: string
+): T => {
+  const currentLayer = mapStore.map
+    ?.getLayers()
+    .getArray()
+    .find((layer) => layer.get("name") == name);
+
+  if (currentLayer != null) return currentLayer as T;
+
+  const newLayer = new VectorLayer({
+    properties: {
+      name: name,
+    },
+  }) as T;
+
+  mapStore.map?.addLayer(newLayer);
+
+  return newLayer;
 };
 
 const handleRightClick = (map: Map) => {
@@ -59,6 +89,24 @@ const handleRightClick = (map: Map) => {
   });
 };
 
-const setPoint = (coordinates: Coordinate) => {
-  getAdresse(coordinates);
+const setPoint = async (coordinates: Coordinate) => {
+  const adresse: Address | null = await getAdresse(coordinates);
+
+  const point = new Point(coordinates);
+  point.set("adresse-label", adresse?.label);
+
+  const feature = new Feature(point);
+
+  const layer = getOrCreateLayer("route-layer");
+
+  let vectorSource = layer.getSource();
+
+  if (!vectorSource) {
+    vectorSource = new VectorSource();
+    layer.setSource(vectorSource);
+  }
+
+  vectorSource.addFeature(feature);
+
+  routeStore.points.push(point);
 };

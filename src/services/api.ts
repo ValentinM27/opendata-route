@@ -1,4 +1,4 @@
-export const get = (url: string) => {
+export const get = async <T>(url: string): Promise<T> => {
   return fetch(url)
     .then((res) => {
       if (res.ok) {
