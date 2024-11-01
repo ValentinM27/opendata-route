@@ -92,8 +92,6 @@ export const getAdresses = async (
     `https://api-adresse.data.gouv.fr/search/?q=${q}&lat=${lat}&lon=${lon}`
   );
 
-  console.log(res);
-
   if (res.features.length === 0) {
     return Array<Feature>();
   }
