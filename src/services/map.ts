@@ -11,7 +11,7 @@ import VectorSource from "ol/source/Vector";
 import BaseLayer from "ol/layer/Base";
 import { Address, Route } from "../types/geolocalisation";
 import {
-  getAdresse,
+  getAdresseReverse,
   getCurrentLongitudeLatitude,
   getRoute,
 } from "./geolocalisation";
@@ -59,6 +59,7 @@ export const initMap = async () => {
   });
 
   useMapStore().map = map;
+  useMapStore().currentPosition = currentLongLat;
 
   setCurrentPosition(map, currentLongLat);
   handleRightClick(map);
@@ -92,7 +93,7 @@ const handleRightClick = (map: Map) => {
 };
 
 const setPoint = async (coordinates: Coordinate) => {
-  const adresse: Address | null = await getAdresse(coordinates);
+  const adresse: Address | null = await getAdresseReverse(coordinates);
 
   const point = new Point(coordinates);
   point.set("adresse-label", adresse?.label);

@@ -63,7 +63,7 @@ const getGeoplateformeUrl = (
   return `https://data.geopf.fr/navigation/itineraire?resource=bdtopo-osrm&start=${start}&end=${end}&profile=${profile}&optimization=${optimization}&constraints=%7B%22constraintType%22%3A%22banned%22%2C%22key%22%3A%22wayType%22%2C%22operator%22%3A%22%3D%22%2C%22value%22%3A%22autoroute%22%7D&getSteps=true&getBbox=true&distanceUnit=kilometer&timeUnit=hour&crs=EPSG%3A3857&intermediates=${intermediates}`;
 };
 
-export const getAdresse = async (
+export const getAdresseReverse = async (
   coordinates: Coordinate
 ): Promise<Address | null> => {
   const [lon, lat] = transform(coordinates, "EPSG:3857", "EPSG:4326");
@@ -77,6 +77,25 @@ export const getAdresse = async (
   }
 
   const adresse: Address = res.features[0].properties;
+
+  return adresse;
+};
+
+export const getAdresses = async (
+  q: string,
+  coordinates: Coordinate
+): Promise<Address[]> => {
+  const [lon, lat] = transform(coordinates, "EPSG:3857", "EPSG:4326");
+
+  const res = await get<ApiAdressResponse>(
+    `https://api-adresse.data.gouv.fr/search/?q=${q}&lat=${lat}&lon=${lon}`
+  );
+
+  if (res.features.length === 0) {
+    return Array<Address>();
+  }
+
+  const adresse: Address[] = res.features.map((feat) => feat.properties);
 
   return adresse;
 };
