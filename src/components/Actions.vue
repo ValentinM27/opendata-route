@@ -2,6 +2,7 @@
   <el-col class="actions-container-top">
     <el-autocomplete
       v-model="search"
+      ref="autocomplete"
       :fetch-suggestions="querySearch"
       clearable
       placeholder="Rechercher une adresse"
@@ -19,14 +20,15 @@
 
 <script setup lang="ts">
 import { ArrowRight } from "@element-plus/icons-vue";
-import { useToolbarStore } from "../stores/ToolbarStore";
-import { useMapStore } from "../stores/MapStore";
+import { Point } from "ol/geom";
+import { fromLonLat } from "ol/proj";
 import { ref } from "vue";
 import { getAdresses } from "../services/geolocalisation";
-import { Feature } from "../types/geolocalisation";
-import { Point } from "ol/geom";
 import { fitExtend } from "../services/map";
-import { fromLonLat } from "ol/proj";
+import { useMapStore } from "../stores/MapStore";
+import { useToolbarStore } from "../stores/ToolbarStore";
+import { Feature } from "../types/geolocalisation";
+import { AutocompleteInstance } from "element-plus";
 
 const toolbarStore = useToolbarStore();
 const mapStore = useMapStore();
@@ -37,6 +39,7 @@ type AutoComplete = {
 };
 
 const search = ref("");
+const autocomplete = ref<AutocompleteInstance>();
 
 const openToolbar = () => {
   toolbarStore.openToolbar = true;
@@ -65,6 +68,9 @@ const moveToPosition = (selectedPosition: AutoComplete) => {
   );
 
   fitExtend(pointToFocus, selectedPosition.feature.properties.type);
+
+  search.value = "";
+  autocomplete.value?.blur();
 };
 </script>
 
