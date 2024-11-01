@@ -8,7 +8,7 @@
 
     <ul>
       <li v-for="(point, index) in routeStore.points" :key="index">
-        {{ point }}
+        {{ point.get("adresse-label") }}
       </li>
     </ul>
   </el-drawer>

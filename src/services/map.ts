@@ -1,6 +1,6 @@
 import { Feature, View } from "ol";
 import { Coordinate } from "ol/coordinate";
-import { Point } from "ol/geom";
+import { LineString, Point } from "ol/geom";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import Map from "ol/Map";
@@ -9,8 +9,12 @@ import { OSM } from "ol/source";
 import VectorSource from "ol/source/Vector";
 
 import BaseLayer from "ol/layer/Base";
-import { Address } from "../types/geolocalisation";
-import { getAdresse, getCurrentLongitudeLatitude } from "./geolocalisation";
+import { Address, Route } from "../types/geolocalisation";
+import {
+  getAdresse,
+  getCurrentLongitudeLatitude,
+  getRoute,
+} from "./geolocalisation";
 import { locationMarkerStyle, outerRingStyle } from "./style";
 
 import { useMapStore } from "../stores/MapStore";
@@ -95,7 +99,7 @@ const setPoint = async (coordinates: Coordinate) => {
 
   const feature = new Feature(point);
 
-  const layer = getOrCreateLayer("route-layer");
+  const layer = getOrCreateLayer("route-points-layer");
 
   let vectorSource = layer.getSource();
 
@@ -107,4 +111,27 @@ const setPoint = async (coordinates: Coordinate) => {
   vectorSource.addFeature(feature);
 
   useRouteStore().points.push(point);
+
+  drawRoute();
+};
+
+const drawRoute = async () => {
+  const route: Route | null = await getRoute(useRouteStore().points as Point[]);
+
+  if (!route) return;
+
+  const lineString = new LineString(route.coordinates);
+
+  const feature = new Feature(lineString);
+
+  const layer = getOrCreateLayer("route-layer");
+
+  let vectorSource = layer.getSource();
+
+  if (!vectorSource) {
+    vectorSource = new VectorSource();
+    layer.setSource(vectorSource);
+  }
+
+  vectorSource.addFeature(feature);
 };

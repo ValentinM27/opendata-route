@@ -3,7 +3,13 @@ import { CENTRE_FRANCE_LAT_LONG } from "../const";
 import { Coordinate } from "ol/coordinate";
 import { get } from "./api";
 import { transform } from "ol/proj";
-import { Address, ApiAdressResponse } from "../types/geolocalisation";
+import {
+  Address,
+  ApiAdressResponse,
+  GeoportailRouteResponse,
+  Route,
+} from "../types/geolocalisation";
+import { divideArray } from "./utils";
 
 export const getCurrentLongitudeLatitude = (): Promise<number[]> => {
   return new Promise((resolve) => {
@@ -18,7 +24,29 @@ export const getCurrentLongitudeLatitude = (): Promise<number[]> => {
   });
 };
 
-export const getRoute = async (points: Point[]): Promise<any> => {};
+export const getRoute = async (points: Point[]): Promise<Route | null> => {
+  if (points.length < 2) return null;
+
+  const {
+    start: startPoint,
+    body: intermediatesPoints,
+    end: endPoint,
+  } = divideArray(points);
+
+  const start = encodeURIComponent(startPoint[0].getCoordinates().toString());
+
+  const intermediates = encodeURIComponent(
+    intermediatesPoints
+      .map((intermediatePoint) => intermediatePoint.getCoordinates().toString())
+      .join("|")
+  );
+
+  const end = encodeURIComponent(endPoint[0].getCoordinates().toString());
+
+  const url = getGeoplateformeUrl(start, end, intermediates, "car", "fastest");
+
+  return (await get<GeoportailRouteResponse>(url)).geometry;
+};
 
 /**
  *

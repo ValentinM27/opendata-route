@@ -1,3 +1,5 @@
+import { Coordinate } from "ol/coordinate";
+
 export type Address = {
   label: string;
   score: number;
@@ -20,4 +22,12 @@ export type ApiAdressResponse = {
   features: {
     properties: Address;
   }[];
+};
+
+export type Route = {
+  coordinates: Coordinate[];
+};
+
+export type GeoportailRouteResponse = {
+  geometry: Route;
 };
