@@ -8,15 +8,13 @@ import { fromLonLat } from "ol/proj";
 import { OSM } from "ol/source";
 import VectorSource from "ol/source/Vector";
 
-import { getCurrentLongitudeLatitude, getAdresse } from "./geolocalisation";
-import { locationMarkerStyle, outerRingStyle } from "./style";
-import { Address } from "../types/geolocalisation";
-import { useMapStore } from "../stores/MapStore";
 import BaseLayer from "ol/layer/Base";
-import { useRouteStore } from "../stores/RouteStore";
+import { Address } from "../types/geolocalisation";
+import { getAdresse, getCurrentLongitudeLatitude } from "./geolocalisation";
+import { locationMarkerStyle, outerRingStyle } from "./style";
 
-const mapStore = useMapStore();
-const routeStore = useRouteStore();
+import { useMapStore } from "../stores/MapStore";
+import { useRouteStore } from "../stores/RouteStore";
 
 export const setCurrentPosition = async (map: Map, position: Coordinate) => {
   const point = new Point(position);
@@ -56,7 +54,7 @@ export const initMap = async () => {
     controls: [],
   });
 
-  mapStore.map = map;
+  useMapStore().map = map;
 
   setCurrentPosition(map, currentLongLat);
   handleRightClick(map);
@@ -65,8 +63,8 @@ export const initMap = async () => {
 const getOrCreateLayer = <T extends VectorLayer & BaseLayer>(
   name: string
 ): T => {
-  const currentLayer = mapStore.map
-    ?.getLayers()
+  const currentLayer = useMapStore()
+    .map?.getLayers()
     .getArray()
     .find((layer) => layer.get("name") == name);
 
@@ -78,7 +76,7 @@ const getOrCreateLayer = <T extends VectorLayer & BaseLayer>(
     },
   }) as T;
 
-  mapStore.map?.addLayer(newLayer);
+  useMapStore().map?.addLayer(newLayer);
 
   return newLayer;
 };
@@ -108,5 +106,5 @@ const setPoint = async (coordinates: Coordinate) => {
 
   vectorSource.addFeature(feature);
 
-  routeStore.points.push(point);
+  useRouteStore().points.push(point);
 };
