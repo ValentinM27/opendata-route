@@ -107,7 +107,7 @@ const setPoint = async (coordinates: Coordinate) => {
   const adresse: Address | null = await getAdresseReverse(coordinates);
 
   const point = new Point(coordinates);
-  point.set("adresse-label", adresse?.label);
+  point.set("adresse-label", adresse?.label ?? `Point de passage`);
 
   const feature = new Feature(point);
 
