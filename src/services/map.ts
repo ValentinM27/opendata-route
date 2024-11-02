@@ -115,7 +115,7 @@ const setPoint = async (coordinates: Coordinate) => {
 
   const point = new Point(coordinates);
 
-  point.set("adresse-label", adresse?.label ?? `Point de passage`);
+  point.set("adresse-label", adresse?.label);
 
   const layer = getOrCreateLayer("route-points-layer");
 

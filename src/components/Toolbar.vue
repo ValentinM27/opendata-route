@@ -4,30 +4,29 @@
     :withHeader="false"
     direction="ltr"
   >
-    <span>Points</span>
+    <div v-if="routeStore.points.length > 0">
+      <span>Points</span>
 
-    <VueDraggableNext
-      class="dragArea list-group w-full"
-      :list="routeStore.points"
-      @change="handleOrderChange"
-    >
-      <div
-        class="list-group-item bg-gray-300 m-1 p-3 rounded-md text-center"
-        v-for="(point, index) in routeStore.points"
-        :key="index"
-      >
-        {{ point.get("adresse-label") }}
-      </div>
-    </VueDraggableNext>
+      <VueDraggableNext :list="routeStore.points" @change="handleOrderChange">
+        <div
+          v-for="(point, index) in routeStore.points"
+          :key="index"
+          class="draggable-element"
+        >
+          <el-tooltip content="Déplacer le point">
+            <el-icon><Grid /></el-icon>
+          </el-tooltip>
+          {{ point.get("adresse-label") ?? `Point ${index + 1}` }}
+        </div>
+      </VueDraggableNext>
 
-    <el-button
-      type="danger"
-      :icon="Delete"
-      @click="handlefullClearRoute"
-      v-if="routeStore.points.length > 0"
-    >
-      Réinitialiser
-    </el-button>
+      <el-button type="danger" :icon="Delete" @click="handlefullClearRoute">
+        Réinitialiser
+      </el-button>
+    </div>
+    <div v-else>
+      <i>La liste des points apparaîtra ici lorsque vous en aurez placé</i>
+    </div>
   </el-drawer>
 </template>
 
@@ -37,7 +36,7 @@ import { useRouteStore } from "../stores/RouteStore";
 import { fullClearRoute, redrawRoute } from "../services/map";
 import { VueDraggableNext } from "vue-draggable-next";
 
-import { Delete } from "@element-plus/icons-vue";
+import { Delete, Grid } from "@element-plus/icons-vue";
 
 const toolbarStore = useToolbarStore();
 const routeStore = useRouteStore();
@@ -50,3 +49,23 @@ const handleOrderChange = () => {
   redrawRoute();
 };
 </script>
+
+<style scoped lang="scss">
+.draggable-element {
+  .el-icon {
+    margin-right: 1rem;
+    cursor: grab;
+  }
+
+  background: #ecf2fa;
+
+  padding: 15px;
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+
+  margin: 10px 0px;
+  height: 25px;
+}
+</style>
