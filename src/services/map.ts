@@ -25,7 +25,7 @@ import {
 
 import { useMapStore } from "../stores/MapStore";
 import { useRouteStore } from "../stores/RouteStore";
-import { Fill, Stroke, Style, Text } from "ol/style";
+import { Fill, Style, Text } from "ol/style";
 
 export const setCurrentPosition = async (map: Map, position: Coordinate) => {
   const point = new Point(position);
