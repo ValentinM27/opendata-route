@@ -106,7 +106,7 @@ const deleteLayer = (name: string) => {
 
 const handleRightClick = (map: Map) => {
   map.on("singleclick", (event) => {
-    setPoint(event.coordinate);
+    setPoint(event.coordinate).then(() => drawRoute());
   });
 };
 
@@ -114,11 +114,22 @@ const setPoint = async (coordinates: Coordinate) => {
   const adresse: Address | null = await getAdresseReverse(coordinates);
 
   const point = new Point(coordinates);
+
   point.set("adresse-label", adresse?.label ?? `Point de passage`);
 
-  const feature = new Feature(point);
+  const layer = getOrCreateLayer("route-points-layer");
 
-  const currentIndex = useRouteStore().points.length + 1;
+  drawPoint(point, layer);
+
+  useRouteStore().points.push(point);
+};
+
+const drawPoint = (
+  point: Point,
+  layer: VectorLayer,
+  currentIndex: number = useRouteStore().points.length + 1
+) => {
+  const feature = new Feature(point);
 
   const labelStyle = new Style({
     text: new Text({
@@ -131,8 +142,6 @@ const setPoint = async (coordinates: Coordinate) => {
 
   feature.setStyle([outerRingStylePoint, locationMarkerStylePoint, labelStyle]);
 
-  const layer = getOrCreateLayer("route-points-layer");
-
   layer.setZIndex(4);
 
   let vectorSource = layer.getSource();
@@ -143,8 +152,14 @@ const setPoint = async (coordinates: Coordinate) => {
   }
 
   vectorSource.addFeature(feature);
+};
 
-  useRouteStore().points.push(point);
+export const drawPoints = () => {
+  const layer = getOrCreateLayer("route-points-layer");
+
+  useRouteStore().points.forEach((point, index) => {
+    drawPoint(point as Point, layer, index + 1);
+  });
 };
 
 export const drawRoute = async () => {
@@ -190,12 +205,18 @@ export const fitExtend = (point: Point, type: string) => {
   }
 };
 
-export const clearRouteAndPoints = () => {
+export const fullClearRoute = () => {
   useRouteStore().points = [];
   clearRoute();
-  deleteLayer("route-points-layer");
 };
 
 export const clearRoute = () => {
   deleteLayer("route-layer");
+  deleteLayer("route-points-layer");
+};
+
+export const redrawRoute = () => {
+  clearRoute();
+  drawPoints();
+  drawRoute();
 };

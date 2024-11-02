@@ -9,6 +9,7 @@
     <VueDraggableNext
       class="dragArea list-group w-full"
       :list="routeStore.points"
+      @change="handleOrderChange"
     >
       <div
         class="list-group-item bg-gray-300 m-1 p-3 rounded-md text-center"
@@ -22,7 +23,7 @@
     <el-button
       type="danger"
       :icon="Delete"
-      @click="handleclearRouteAndPoints"
+      @click="handlefullClearRoute"
       v-if="routeStore.points.length > 0"
     >
       Réinitialiser
@@ -33,7 +34,7 @@
 <script setup lang="ts">
 import { useToolbarStore } from "../stores/ToolbarStore";
 import { useRouteStore } from "../stores/RouteStore";
-import { clearRouteAndPoints } from "../services/map";
+import { fullClearRoute, redrawRoute } from "../services/map";
 import { VueDraggableNext } from "vue-draggable-next";
 
 import { Delete } from "@element-plus/icons-vue";
@@ -41,7 +42,11 @@ import { Delete } from "@element-plus/icons-vue";
 const toolbarStore = useToolbarStore();
 const routeStore = useRouteStore();
 
-const handleclearRouteAndPoints = () => {
-  clearRouteAndPoints();
+const handlefullClearRoute = () => {
+  fullClearRoute();
+};
+
+const handleOrderChange = () => {
+  redrawRoute();
 };
 </script>
