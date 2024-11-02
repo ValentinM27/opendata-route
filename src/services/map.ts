@@ -145,11 +145,9 @@ const setPoint = async (coordinates: Coordinate) => {
   vectorSource.addFeature(feature);
 
   useRouteStore().points.push(point);
-
-  drawRoute();
 };
 
-const drawRoute = async () => {
+export const drawRoute = async () => {
   const route: Route | null = await getRoute(useRouteStore().points as Point[]);
 
   if (!route) return;
@@ -192,8 +190,12 @@ export const fitExtend = (point: Point, type: string) => {
   }
 };
 
-export const clearRoute = () => {
+export const clearRouteAndPoints = () => {
   useRouteStore().points = [];
-  deleteLayer("route-layer");
+  clearRoute();
   deleteLayer("route-points-layer");
+};
+
+export const clearRoute = () => {
+  deleteLayer("route-layer");
 };

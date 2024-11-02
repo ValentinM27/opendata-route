@@ -6,16 +6,23 @@
   >
     <span>Points</span>
 
-    <ul>
-      <li v-for="(point, index) in routeStore.points" :key="index">
-        Point {{ index + 1 }} {{ point?.get("adresse-label") }}
-      </li>
-    </ul>
+    <VueDraggableNext
+      class="dragArea list-group w-full"
+      :list="routeStore.points"
+    >
+      <div
+        class="list-group-item bg-gray-300 m-1 p-3 rounded-md text-center"
+        v-for="(point, index) in routeStore.points"
+        :key="index"
+      >
+        {{ point.get("adresse-label") }}
+      </div>
+    </VueDraggableNext>
 
     <el-button
       type="danger"
       :icon="Delete"
-      @click="handleClearRoute"
+      @click="handleclearRouteAndPoints"
       v-if="routeStore.points.length > 0"
     >
       Réinitialiser
@@ -26,14 +33,15 @@
 <script setup lang="ts">
 import { useToolbarStore } from "../stores/ToolbarStore";
 import { useRouteStore } from "../stores/RouteStore";
-import { clearRoute } from "../services/map";
+import { clearRouteAndPoints } from "../services/map";
+import { VueDraggableNext } from "vue-draggable-next";
 
 import { Delete } from "@element-plus/icons-vue";
 
 const toolbarStore = useToolbarStore();
 const routeStore = useRouteStore();
 
-const handleClearRoute = () => {
-  clearRoute();
+const handleclearRouteAndPoints = () => {
+  clearRouteAndPoints();
 };
 </script>

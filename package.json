@@ -12,7 +12,8 @@
     "element-plus": "^2.8.6",
     "ol": "^10.2.1",
     "pinia": "^2.2.5",
-    "vue": "^3.4.26"
+    "vue": "^3.4.26",
+    "vue-draggable-next": "^2.2.1"
   },
   "devDependencies": {
     "@vite-pwa/assets-generator": "^0.2.4",
