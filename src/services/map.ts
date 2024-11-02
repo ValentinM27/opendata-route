@@ -25,6 +25,7 @@ import {
 
 import { useMapStore } from "../stores/MapStore";
 import { useRouteStore } from "../stores/RouteStore";
+import { Fill, Stroke, Style, Text } from "ol/style";
 
 export const setCurrentPosition = async (map: Map, position: Coordinate) => {
   const point = new Point(position);
@@ -117,7 +118,18 @@ const setPoint = async (coordinates: Coordinate) => {
 
   const feature = new Feature(point);
 
-  feature.setStyle([outerRingStylePoint, locationMarkerStylePoint]);
+  const currentIndex = useRouteStore().points.length + 1;
+
+  const labelStyle = new Style({
+    text: new Text({
+      font: "10px Verdana",
+      text: currentIndex.toString(),
+      fill: new Fill({ color: "#fff" }),
+    }),
+    zIndex: 10,
+  });
+
+  feature.setStyle([outerRingStylePoint, locationMarkerStylePoint, labelStyle]);
 
   const layer = getOrCreateLayer("route-points-layer");
 

@@ -55,17 +55,17 @@ const innerCircleFillPoint = new Fill({
 });
 
 const innerCirclePoint = new CircleStyle({
-  radius: 5,
+  radius: 8,
   fill: innerCircleFillPoint,
 });
 
 const outerRingStrokePoint = new Stroke({
   color: "rgba(255, 255, 255, 1)",
-  width: 4,
+  width: 2,
 });
 
 const outerRingPoint = new CircleStyle({
-  radius: 5,
+  radius: 9,
   stroke: outerRingStrokePoint,
 });
 

@@ -8,7 +8,7 @@
 
     <ul>
       <li v-for="(point, index) in routeStore.points" :key="index">
-        {{ point.get("adresse-label") }}
+        Point {{ index + 1 }} {{ point?.get("adresse-label") }}
       </li>
     </ul>
 
