@@ -13,10 +13,23 @@
           :key="index"
           class="draggable-element"
         >
-          <el-tooltip content="Déplacer le point">
-            <el-icon><Grid /></el-icon>
-          </el-tooltip>
-          {{ point.get("adresse-label") ?? `Point ${index + 1}` }}
+          <el-col :span="2">
+            <el-tooltip content="Déplacer le point">
+              <el-icon><Grid /></el-icon>
+            </el-tooltip>
+          </el-col>
+          <el-col :span="18">
+            {{ point.get("adresse-label") ?? `Point ${index + 1}` }}
+          </el-col>
+          <el-col :span="4">
+            <el-tooltip content="Supprimer le point">
+              <el-button
+                type="danger"
+                :icon="Delete"
+                @click="() => handleDeletePoint(index)"
+              />
+            </el-tooltip>
+          </el-col>
         </div>
       </VueDraggableNext>
 
@@ -33,7 +46,7 @@
 <script setup lang="ts">
 import { useToolbarStore } from "../stores/ToolbarStore";
 import { useRouteStore } from "../stores/RouteStore";
-import { fullClearRoute, redrawRoute } from "../services/map";
+import { deletePoint, fullClearRoute, redrawRoute } from "../services/map";
 import { VueDraggableNext } from "vue-draggable-next";
 
 import { Delete, Grid } from "@element-plus/icons-vue";
@@ -47,6 +60,10 @@ const handlefullClearRoute = () => {
 
 const handleOrderChange = () => {
   redrawRoute();
+};
+
+const handleDeletePoint = (index: number) => {
+  deletePoint(index);
 };
 </script>
 

@@ -220,3 +220,8 @@ export const redrawRoute = () => {
   drawPoints();
   drawRoute();
 };
+
+export const deletePoint = (index: number) => {
+  useRouteStore().points.splice(index, 1);
+  redrawRoute();
+};
