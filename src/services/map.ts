@@ -15,7 +15,13 @@ import {
   getCurrentLongitudeLatitude,
   getRoute,
 } from "./geolocalisation";
-import { locationMarkerStyle, outerRingStyle, redLineStyle } from "./style";
+import {
+  locationMarkerStyle,
+  locationMarkerStylePoint,
+  outerRingStyle,
+  outerRingStylePoint,
+  combinedLineStyle,
+} from "./style";
 
 import { useMapStore } from "../stores/MapStore";
 import { useRouteStore } from "../stores/RouteStore";
@@ -111,7 +117,11 @@ const setPoint = async (coordinates: Coordinate) => {
 
   const feature = new Feature(point);
 
+  feature.setStyle([outerRingStylePoint, locationMarkerStylePoint]);
+
   const layer = getOrCreateLayer("route-points-layer");
+
+  layer.setZIndex(4);
 
   let vectorSource = layer.getSource();
 
@@ -135,9 +145,12 @@ const drawRoute = async () => {
   const lineString = new LineString(route.coordinates);
 
   const feature = new Feature(lineString);
-  feature.setStyle([redLineStyle]);
+
+  feature.setStyle(combinedLineStyle);
 
   const layer = getOrCreateLayer("route-layer");
+
+  layer.setZIndex(2);
 
   let vectorSource = layer.getSource();
 
