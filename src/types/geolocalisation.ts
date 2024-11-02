@@ -38,4 +38,6 @@ export type Route = {
 
 export type GeoportailRouteResponse = {
   geometry: Route;
+  distance: number;
+  duration: number;
 };

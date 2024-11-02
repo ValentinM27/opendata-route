@@ -206,7 +206,7 @@ export const fitExtend = (point: Point, type: string) => {
 };
 
 export const fullClearRoute = () => {
-  useRouteStore().points = [];
+  useRouteStore().reset();
   clearRoute();
 };
 

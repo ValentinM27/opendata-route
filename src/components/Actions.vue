@@ -16,6 +16,9 @@
       </el-icon>
     </el-button>
   </el-col>
+  <el-col class="actions-container-right-top" v-if="useRouteStore().distance">
+    {{ formatNumber(useRouteStore().distance!, 2) }} km
+  </el-col>
   <el-col class="actions-container-right" :gutter="2">
     <el-row>
       <div class="zooms">
@@ -58,6 +61,8 @@ import { useMapStore } from "../stores/MapStore";
 import { useToolbarStore } from "../stores/ToolbarStore";
 import { Feature } from "../types/geolocalisation";
 import { AutocompleteInstance } from "element-plus";
+import { useRouteStore } from "../stores/RouteStore";
+import { formatNumber } from "../services/utils";
 
 const toolbarStore = useToolbarStore();
 const mapStore = useMapStore();
@@ -190,5 +195,21 @@ const unZoom = () => {
     display: flex;
     flex-direction: column;
   }
+}
+
+.actions-container-right-top {
+  position: absolute;
+  z-index: 1000;
+  right: 15px;
+  top: 15px;
+
+  background: #fff;
+  border-radius: 10px;
+
+  height: 30px;
+  padding: 5px;
+
+  display: flex;
+  align-items: center;
 }
 </style>

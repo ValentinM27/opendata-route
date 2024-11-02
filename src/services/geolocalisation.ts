@@ -1,7 +1,7 @@
 import { Point } from "ol/geom";
 import { CENTRE_FRANCE_LAT_LONG } from "../const";
 import { Coordinate } from "ol/coordinate";
-import { get } from "./api";
+import { get, getWithLoader } from "./api";
 import { transform } from "ol/proj";
 import {
   Address,
@@ -11,6 +11,7 @@ import {
   Route,
 } from "../types/geolocalisation";
 import { divideArray } from "./utils";
+import { useRouteStore } from "../stores/RouteStore";
 
 export const getCurrentLongitudeLatitude = (): Promise<number[]> => {
   return new Promise((resolve) => {
@@ -46,7 +47,13 @@ export const getRoute = async (points: Point[]): Promise<Route | null> => {
 
   const url = getGeoplateformeUrl(start, end, intermediates, "car", "fastest");
 
-  return (await get<GeoportailRouteResponse>(url)).geometry;
+  const geoportaileResponse = await getWithLoader<GeoportailRouteResponse>(url);
+
+  // Alimente le store avec les données de distance et de  temps
+  useRouteStore().distance = geoportaileResponse.distance;
+  useRouteStore().duration = geoportaileResponse.duration;
+
+  return geoportaileResponse.geometry;
 };
 
 /**
@@ -69,7 +76,7 @@ export const getAdresseReverse = async (
 ): Promise<Address | null> => {
   const [lon, lat] = transform(coordinates, "EPSG:3857", "EPSG:4326");
 
-  const res = await get<ApiAdressResponse>(
+  const res = await getWithLoader<ApiAdressResponse>(
     `https://api-adresse.data.gouv.fr/reverse/?lon=${lon}&lat=${lat}&limit=1`
   );
 
