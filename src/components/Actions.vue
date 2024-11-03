@@ -42,6 +42,19 @@
       </el-icon>
     </el-button>
   </el-col>
+  <el-col class="actions-container-left-bottom">
+    <div>
+      <a
+        href="https://github.com/ValentinM27/opendata-route"
+        rel="noreferrer"
+        target="_blank"
+      >
+        GitHub
+      </a>
+
+      - © IGN 2023
+    </div>
+  </el-col>
   <el-col class="actions-container-right-top" v-if="useRouteStore().distance">
     {{ convertDurationToString(routeStore.duration!) }} (
     {{ formatNumber(routeStore.distance!, 2) }} km)
@@ -76,7 +89,6 @@
     </el-row>
   </el-col>
 </template>
-
 <script setup lang="ts">
 import { ArrowRight, Aim, ZoomIn, ZoomOut } from "@element-plus/icons-vue";
 import { Point } from "ol/geom";
@@ -197,6 +209,20 @@ const handleChangeProfile = () => {
   border-radius: 0 15px 15px 0;
   padding: 1rem 0.5rem;
   width: fit-content;
+}
+
+.actions-container-left-bottom {
+  position: absolute;
+  z-index: 1000;
+  left: 0;
+  // transform: translate(0, -50%);
+  bottom: 0;
+
+  div {
+    width: fit-content;
+    padding: 0 1rem;
+    background: #f5f7fa;
+  }
 }
 
 .actions-container-top {
