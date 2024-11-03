@@ -23,12 +23,10 @@ export const formatNumber = (number: number, fraction: number) => {
 };
 
 export const convertDurationToString = (duration: number) => {
-  let totalSeconds = duration * 3600;
+  const totalSeconds = duration * 3600;
 
-  let hours = Math.floor(totalSeconds / 3600);
-  let minutes = Math.floor((totalSeconds % 3600) / 60);
-
-  console.log(hours, minutes);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
 
   let durationToString = "";
 

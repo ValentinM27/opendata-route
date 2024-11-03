@@ -60,6 +60,24 @@
     {{ formatNumber(routeStore.distance!, 2) }} km)
   </el-col>
   <el-col class="actions-container-right">
+    <el-popover placement="top-start" :width="50" trigger="hover">
+      <template #reference>
+        <div class="maptype-selector">
+          <img :src="maptypeIcon[mapStore.currentMapLayer]" />
+        </div>
+      </template>
+
+      <div
+        class="maptype-selector"
+        v-for="mapStyle in MapStyleArray.filter(
+          (mapStyle) => mapStyle !== mapStore.currentMapLayer
+        )"
+      >
+        <el-button @click="() => changeMapLayer(mapStyle)">
+          <img :src="maptypeIcon[mapStyle]" />
+        </el-button>
+      </div>
+    </el-popover>
     <el-row>
       <div class="zooms">
         <el-tooltip content="Zoomer" placement="left">
@@ -95,13 +113,14 @@ import { Point } from "ol/geom";
 import { fromLonLat } from "ol/proj";
 import { ref } from "vue";
 import { getAdresses } from "../services/geolocalisation";
-import { fitExtend, redrawRoute } from "../services/map";
+import { changeMapLayer, fitExtend, redrawRoute } from "../services/map";
 import { useMapStore } from "../stores/MapStore";
 import { useToolbarStore } from "../stores/ToolbarStore";
 import { Feature } from "../types/geolocalisation";
 import { AutocompleteInstance } from "element-plus";
 import { useRouteStore } from "../stores/RouteStore";
 import { convertDurationToString, formatNumber } from "../services/utils";
+import { MapStyleArray } from "../types/map";
 
 const toolbarStore = useToolbarStore();
 const mapStore = useMapStore();
@@ -109,6 +128,9 @@ const routeStore = useRouteStore();
 
 const Car = new URL("../assets/car.png", import.meta.url).href;
 const Walk = new URL("../assets/walk.png", import.meta.url).href;
+
+const Ortho = new URL("../assets/ortho.png", import.meta.url).href;
+const Osm = new URL("../assets/osm.png", import.meta.url).href;
 
 type AutoComplete = {
   value: string;
@@ -132,6 +154,11 @@ const icon = {
     icon: Walk,
     label: "À pieds",
   },
+};
+
+const maptypeIcon = {
+  osm: Osm,
+  ortho: Ortho,
 };
 
 const openToolbar = () => {
@@ -245,6 +272,10 @@ const handleChangeProfile = () => {
 }
 
 .actions-container-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
   position: absolute;
   z-index: 1000;
   right: 15px;
@@ -257,7 +288,6 @@ const handleChangeProfile = () => {
   }
 
   .el-row {
-    margin-bottom: 10px;
     justify-content: center;
   }
 
@@ -276,6 +306,30 @@ const handleChangeProfile = () => {
 
     display: flex;
     flex-direction: column;
+  }
+}
+
+.maptype-selector {
+  border: 2px solid #606266;
+
+  height: 46px;
+  width: 46px;
+
+  margin-left: auto;
+  margin-right: auto;
+
+  border-radius: 10px;
+  overflow: hidden;
+
+  .el-button {
+    height: 100%;
+    width: 100%;
+  }
+
+  img {
+    cursor: pointer;
+    height: 46px;
+    width: 46px;
   }
 }
 

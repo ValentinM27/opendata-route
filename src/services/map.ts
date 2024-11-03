@@ -1,31 +1,36 @@
 import { Feature, View } from "ol";
 import { Coordinate } from "ol/coordinate";
+import { getWidth } from "ol/extent";
 import { LineString, Point } from "ol/geom";
+import BaseLayer from "ol/layer/Base";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import Map from "ol/Map";
 import { fromLonLat } from "ol/proj";
 import { OSM } from "ol/source";
 import VectorSource from "ol/source/Vector";
+import WMTS from "ol/source/WMTS.js";
+import { Fill, Style, Text } from "ol/style";
+import WMTSTileGrid from "ol/tilegrid/WMTS";
 
-import BaseLayer from "ol/layer/Base";
 import { Address, Route } from "../types/geolocalisation";
 import {
   getAdresseReverse,
   getCurrentLongitudeLatitude,
   getRoute,
 } from "./geolocalisation";
+
 import {
+  combinedLineStyle,
   locationMarkerStyle,
   locationMarkerStylePoint,
   outerRingStyle,
   outerRingStylePoint,
-  combinedLineStyle,
 } from "./style";
 
 import { useMapStore } from "../stores/MapStore";
 import { useRouteStore } from "../stores/RouteStore";
-import { Fill, Style, Text } from "ol/style";
+import { MapStyle } from "../types/map";
 
 export const setCurrentPosition = async (map: Map, position: Coordinate) => {
   const point = new Point(position);
@@ -42,6 +47,7 @@ export const setCurrentPosition = async (map: Map, position: Coordinate) => {
     properties: {
       name: "current-location-layer",
     },
+    zIndex: 2,
   });
 
   map.addLayer(vectorLayer);
@@ -54,6 +60,10 @@ export const initMap = async () => {
     layers: [
       new TileLayer({
         source: new OSM(),
+        properties: {
+          name: "map-layer",
+        },
+        zIndex: 1,
       }),
     ],
     target: "map",
@@ -70,6 +80,73 @@ export const initMap = async () => {
 
   setCurrentPosition(map, currentLongLat);
   handleRightClick(map);
+};
+
+export const changeMapLayer = (type: MapStyle) => {
+  deleteLayer("map-layer");
+
+  switch (type) {
+    case "ortho":
+      switchToOrtho();
+      break;
+    case "osm":
+    default:
+      switchToOsm();
+      break;
+  }
+};
+
+const switchToOrtho = () => {
+  const resolutions = [];
+  const matrixIds = [];
+
+  const maxResolution =
+    getWidth(useMapStore().map!.getView().getProjection().getExtent()) / 256;
+
+  for (let i = 0; i < 20; i++) {
+    matrixIds[i] = i.toString();
+    resolutions[i] = maxResolution / Math.pow(2, i);
+  }
+
+  const tileGrid = new WMTSTileGrid({
+    origin: [-20037508, 20037508],
+    resolutions: resolutions,
+    matrixIds: matrixIds,
+  });
+
+  const source = new WMTS({
+    url: "https://data.geopf.fr/wmts",
+    layer: "HR.ORTHOIMAGERY.ORTHOPHOTOS",
+    matrixSet: "PM",
+    format: "image/jpeg",
+    projection: "EPSG:2154",
+    tileGrid: tileGrid,
+    style: "normal",
+  });
+
+  const ign = new TileLayer({
+    source: source,
+    properties: {
+      name: "map-layer",
+    },
+    zIndex: 1,
+  });
+
+  useMapStore().map?.addLayer(ign);
+  useMapStore().currentMapLayer = "ortho";
+};
+
+const switchToOsm = () => {
+  const newLayer = new TileLayer({
+    source: new OSM(),
+    properties: {
+      name: "map-layer",
+    },
+    zIndex: 1,
+  });
+
+  useMapStore().map?.addLayer(newLayer);
+  useMapStore().currentMapLayer = "osm";
 };
 
 const getOrCreateLayer = <T extends VectorLayer & BaseLayer>(
