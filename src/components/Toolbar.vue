@@ -22,7 +22,7 @@
           <el-col :span="18" class="label-container">
             {{ point.get("adresse-label") ?? `Point ${index + 1}` }}
           </el-col>
-          <el-col :span="4">
+          <el-col :span="4" class="delete-container">
             <el-tooltip content="Supprimer le point">
               <el-button
                 type="danger"
@@ -89,9 +89,18 @@ const handleDeletePoint = (index: number) => {
   margin: 10px 0px;
   height: 45px;
 
+  .el-col {
+    display: flex;
+    align-items: center;
+  }
+
   .label-container {
     width: 100%;
     height: 45px;
+  }
+
+  .delete-container {
+    justify-content: end;
   }
 }
 
