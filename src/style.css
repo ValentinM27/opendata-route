@@ -4,3 +4,9 @@
 
   font-family: Verdana;
 }
+
+.el-popover.el-popper {
+  border-radius: 10px;
+  min-width: 0;
+  width: fit-content !important;
+}

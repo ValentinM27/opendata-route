@@ -16,7 +16,6 @@
       <template #label="{ value }: { value: ProfilOption }">
         <div class="select-label-wrapper">
           <img :src="icon[value].icon" class="select-icons" />
-
           {{ icon[value].label }}
         </div>
       </template>
@@ -60,15 +59,14 @@
     {{ formatNumber(routeStore.distance!, 2) }} km)
   </el-col>
   <el-col class="actions-container-right">
-    <el-popover placement="top-start" :width="50" trigger="hover">
+    <el-popover placement="top" trigger="hover" effect="dark">
       <template #reference>
         <div class="maptype-selector">
           <img :src="maptypeIcon[mapStore.currentMapLayer]" />
         </div>
       </template>
-
       <div
-        class="maptype-selector"
+        class="maptype-selector alternate"
         v-for="mapStyle in MapStyleArray.filter(
           (mapStyle) => mapStyle !== mapStore.currentMapLayer
         )"
@@ -242,7 +240,6 @@ const handleChangeProfile = () => {
   position: absolute;
   z-index: 1000;
   left: 0;
-  // transform: translate(0, -50%);
   bottom: 0;
 
   div {
@@ -310,7 +307,11 @@ const handleChangeProfile = () => {
 }
 
 .maptype-selector {
-  border: 2px solid #606266;
+  border: 2px solid #fff;
+
+  &.alternate {
+    border: none;
+  }
 
   height: 46px;
   width: 46px;
@@ -356,6 +357,7 @@ const handleChangeProfile = () => {
   display: flex;
   align-items: center;
   gap: 1rem;
+
   .select-icons {
     height: auto;
     width: 20px;
