@@ -21,3 +21,22 @@ export const formatNumber = (number: number, fraction: number) => {
     number
   );
 };
+
+export const convertDurationToString = (duration: number) => {
+  let totalSeconds = duration * 3600;
+
+  let hours = Math.floor(totalSeconds / 3600);
+  let minutes = Math.floor((totalSeconds % 3600) / 60);
+
+  console.log(hours, minutes);
+
+  let durationToString = "";
+
+  if (hours > 0) {
+    durationToString = `${hours} h `;
+  }
+
+  durationToString += `${minutes} min`;
+
+  return durationToString;
+};

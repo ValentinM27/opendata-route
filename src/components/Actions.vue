@@ -17,7 +17,8 @@
     </el-button>
   </el-col>
   <el-col class="actions-container-right-top" v-if="useRouteStore().distance">
-    {{ formatNumber(useRouteStore().distance!, 2) }} km
+    {{ convertDurationToString(routeStore.duration!) }} (
+    {{ formatNumber(routeStore.distance!, 2) }} km)
   </el-col>
   <el-col class="actions-container-right" :gutter="2">
     <el-row>
@@ -62,10 +63,11 @@ import { useToolbarStore } from "../stores/ToolbarStore";
 import { Feature } from "../types/geolocalisation";
 import { AutocompleteInstance } from "element-plus";
 import { useRouteStore } from "../stores/RouteStore";
-import { formatNumber } from "../services/utils";
+import { convertDurationToString, formatNumber } from "../services/utils";
 
 const toolbarStore = useToolbarStore();
 const mapStore = useMapStore();
+const routeStore = useRouteStore();
 
 type AutoComplete = {
   value: string;
