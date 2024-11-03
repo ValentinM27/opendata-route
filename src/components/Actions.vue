@@ -8,29 +8,15 @@
       placeholder="Rechercher une adresse"
       @select="moveToPosition"
     />
-  </el-col>
-  <el-col class="actions-container-left">
-    <el-button circle @click="openToolbar">
-      <el-icon>
-        <el-icon><ArrowRight /></el-icon>
-      </el-icon>
-    </el-button>
-  </el-col>
-  <el-col class="actions-container-right-top" v-if="useRouteStore().distance">
-    {{ convertDurationToString(routeStore.duration!) }} (
-    {{ formatNumber(routeStore.distance!, 2) }} km)
-  </el-col>
-  <el-col class="actions-container-right">
     <el-select
       v-model="routeStore.profile"
-      style="width: 150px"
+      style="width: 250px"
       @change="handleChangeProfile"
     >
       <template #label="{ value }: { value: ProfilOption }">
         <div class="select-label-wrapper">
-          <el-icon>
-            <img :src="icon[value].icon" class="select-icons" />
-          </el-icon>
+          <img :src="icon[value].icon" class="select-icons" />
+
           {{ icon[value].label }}
         </div>
       </template>
@@ -48,6 +34,19 @@
         </div>
       </el-option>
     </el-select>
+  </el-col>
+  <el-col class="actions-container-left">
+    <el-button circle @click="openToolbar">
+      <el-icon>
+        <el-icon><ArrowRight /></el-icon>
+      </el-icon>
+    </el-button>
+  </el-col>
+  <el-col class="actions-container-right-top" v-if="useRouteStore().distance">
+    {{ convertDurationToString(routeStore.duration!) }} (
+    {{ formatNumber(routeStore.distance!, 2) }} km)
+  </el-col>
+  <el-col class="actions-container-right">
     <el-row>
       <div class="zooms">
         <el-tooltip content="Zoomer" placement="left">
@@ -207,7 +206,12 @@ const handleChangeProfile = () => {
   top: 15px;
 
   transform: translate(-50%, 0);
-  width: 400px;
+  width: fit-content;
+
+  padding: 0.5rem;
+
+  display: flex;
+  gap: 1rem;
 
   .el-input__wrapper {
     border-radius: 5px;
