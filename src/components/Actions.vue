@@ -20,7 +20,34 @@
     {{ convertDurationToString(routeStore.duration!) }} (
     {{ formatNumber(routeStore.distance!, 2) }} km)
   </el-col>
-  <el-col class="actions-container-right" :gutter="2">
+  <el-col class="actions-container-right">
+    <el-select
+      v-model="routeStore.profile"
+      style="width: 150px"
+      @change="handleChangeProfile"
+    >
+      <template #label="{ value }: { value: ProfilOption }">
+        <div class="select-label-wrapper">
+          <el-icon>
+            <img :src="icon[value].icon" class="select-icons" />
+          </el-icon>
+          {{ icon[value].label }}
+        </div>
+      </template>
+      <el-option
+        v-for="item in profileOptions"
+        :key="item"
+        :label="item"
+        :value="item"
+      >
+        <div class="select-label-wrapper">
+          <el-icon>
+            <img :src="icon[item].icon" class="select-icons" />
+          </el-icon>
+          {{ icon[item].label }}
+        </div>
+      </el-option>
+    </el-select>
     <el-row>
       <div class="zooms">
         <el-tooltip content="Zoomer" placement="left">
@@ -57,7 +84,7 @@ import { Point } from "ol/geom";
 import { fromLonLat } from "ol/proj";
 import { ref } from "vue";
 import { getAdresses } from "../services/geolocalisation";
-import { fitExtend } from "../services/map";
+import { fitExtend, redrawRoute } from "../services/map";
 import { useMapStore } from "../stores/MapStore";
 import { useToolbarStore } from "../stores/ToolbarStore";
 import { Feature } from "../types/geolocalisation";
@@ -69,13 +96,32 @@ const toolbarStore = useToolbarStore();
 const mapStore = useMapStore();
 const routeStore = useRouteStore();
 
+const Car = new URL("../assets/car.png", import.meta.url).href;
+const Walk = new URL("../assets/walk.png", import.meta.url).href;
+
 type AutoComplete = {
   value: string;
   feature: Feature;
 };
 
+type ProfilOption = keyof typeof icon;
+type ProfileOptions = Array<ProfilOption>;
+
 const search = ref("");
 const autocomplete = ref<AutocompleteInstance>();
+
+const profileOptions: ProfileOptions = ["car", "pedestrian"];
+
+const icon = {
+  car: {
+    icon: Car,
+    label: "En voiture",
+  },
+  pedestrian: {
+    icon: Walk,
+    label: "À pieds",
+  },
+};
 
 const openToolbar = () => {
   toolbarStore.openToolbar = true;
@@ -133,6 +179,10 @@ const unZoom = () => {
   if (currentZoom > minZoom) currentZoom--;
 
   mapStore.map?.getView().setZoom(currentZoom);
+};
+
+const handleChangeProfile = () => {
+  redrawRoute();
 };
 </script>
 
@@ -213,5 +263,15 @@ const unZoom = () => {
 
   display: flex;
   align-items: center;
+}
+
+.select-label-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  .select-icons {
+    height: auto;
+    width: 20px;
+  }
 }
 </style>

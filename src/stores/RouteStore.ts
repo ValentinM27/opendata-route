@@ -7,11 +7,14 @@ export const useRouteStore = defineStore("routeStore", () => {
   const distance = ref<number | undefined>(undefined);
   const duration = ref<number | undefined>(undefined);
 
+  const profile = ref<"pedestrian" | "car">("car");
+
   const reset = () => {
     points.value = [];
     distance.value = undefined;
     duration.value = undefined;
+    profile.value = "car";
   };
 
-  return { points, distance, duration, reset };
+  return { points, distance, duration, profile, reset };
 });
