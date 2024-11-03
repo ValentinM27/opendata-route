@@ -3,8 +3,9 @@
     v-model="toolbarStore.openToolbar"
     :withHeader="false"
     direction="ltr"
+    size="400px"
   >
-    <div v-if="routeStore.points.length > 0">
+    <div v-if="routeStore.points.length > 0" class="point-list-container">
       <span>Points</span>
 
       <VueDraggableNext :list="routeStore.points" @change="handleOrderChange">
@@ -18,7 +19,7 @@
               <el-icon><Grid /></el-icon>
             </el-tooltip>
           </el-col>
-          <el-col :span="18">
+          <el-col :span="18" class="label-container">
             {{ point.get("adresse-label") ?? `Point ${index + 1}` }}
           </el-col>
           <el-col :span="4">
@@ -77,12 +78,26 @@ const handleDeletePoint = (index: number) => {
   background: #ecf2fa;
 
   padding: 15px;
-  border-radius: 10px;
+  border-radius: 5px;
+  border: 1px solid #dcdfe6;
+
+  color: #606266;
 
   display: flex;
   align-items: center;
 
   margin: 10px 0px;
-  height: 25px;
+  height: 45px;
+
+  .label-container {
+    width: 100%;
+    height: 45px;
+  }
+}
+
+.point-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 </style>

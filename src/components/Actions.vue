@@ -257,10 +257,13 @@ const handleChangeProfile = () => {
   position: absolute;
   z-index: 1000;
   right: 15px;
-  top: 15px;
+  top: 25px;
 
   background: #fff;
-  border-radius: 10px;
+  border-radius: 5px;
+  border: 1px solid #dcdfe6;
+
+  color: #606266;
 
   height: 30px;
   padding: 5px;
