@@ -300,5 +300,8 @@ export const redrawRoute = () => {
 
 export const deletePoint = (index: number) => {
   useRouteStore().points.splice(index, 1);
+  useRouteStore().distance = undefined;
+  useRouteStore().duration = undefined;
+
   redrawRoute();
 };
