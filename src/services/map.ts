@@ -31,6 +31,7 @@ import {
 import { useMapStore } from "../stores/MapStore";
 import { useRouteStore } from "../stores/RouteStore";
 import { MapStyle } from "../types/map";
+import { getAltimetryLine } from "./altrimetrie";
 
 export const setCurrentPosition = async (map: Map, position: Coordinate) => {
   const point = new Point(position);
@@ -262,6 +263,8 @@ export const drawRoute = async () => {
   }
 
   vectorSource.addFeature(feature);
+
+  getAltimetryLine(route.coordinates);
 };
 
 const zoomLevels = {
@@ -302,6 +305,7 @@ export const deletePoint = (index: number) => {
   useRouteStore().points.splice(index, 1);
   useRouteStore().distance = undefined;
   useRouteStore().duration = undefined;
+  useRouteStore().altimetryLine = [];
 
   redrawRoute();
 };
