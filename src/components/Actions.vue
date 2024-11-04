@@ -150,7 +150,7 @@ const icon = {
   },
   pedestrian: {
     icon: Walk,
-    label: "À pieds",
+    label: "À pied",
   },
 };
 
