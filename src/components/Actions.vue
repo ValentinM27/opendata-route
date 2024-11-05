@@ -58,6 +58,11 @@
     {{ convertDurationToString(routeStore.duration!) }} (
     {{ formatNumber(routeStore.distance!, 2) }} km)
   </el-col>
+  <el-col class="actions-container-bottom-center">
+    <div v-if="lineData">
+      <Line :data="lineData" :options="options" />
+    </div>
+  </el-col>
   <el-col class="actions-container-right">
     <el-popover placement="top" trigger="hover" effect="dark">
       <template #reference>
@@ -107,9 +112,9 @@
 </template>
 <script setup lang="ts">
 import { ArrowRight, Aim, ZoomIn, ZoomOut } from "@element-plus/icons-vue";
-import { Point } from "ol/geom";
+import { Point as OlPoint } from "ol/geom";
 import { fromLonLat } from "ol/proj";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { getAdresses } from "../services/geolocalisation";
 import { changeMapLayer, fitExtend, redrawRoute } from "../services/map";
 import { useMapStore } from "../stores/MapStore";
@@ -119,6 +124,30 @@ import { AutocompleteInstance } from "element-plus";
 import { useRouteStore } from "../stores/RouteStore";
 import { convertDurationToString, formatNumber } from "../services/utils";
 import { MapStyleArray } from "../types/map";
+
+// Imports pour ChartJS
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "vue-chartjs";
+import { Elevation } from "../types/altrimetrie";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const toolbarStore = useToolbarStore();
 const mapStore = useMapStore();
@@ -135,11 +164,49 @@ type AutoComplete = {
   feature: Feature;
 };
 
+type LineDataset = {
+  label: string;
+  backgroundColor: string;
+  borderColor: string;
+  data: number[];
+};
+
+type LineData = {
+  labels: string[];
+  datasets: LineDataset[];
+};
+
+const options = {
+  maintainAspectRatio: false,
+  elements: {
+    point: {
+      radius: 0,
+    },
+  },
+  plugins: {
+    legend: {
+      display: false,
+    },
+  },
+  scales: {
+    x: {
+      type: "linear" as string,
+      beginAtZero: true,
+    },
+    y: {
+      type: "linear" as string,
+      beginAtZero: true,
+    },
+  },
+};
+
 type ProfilOption = keyof typeof icon;
 type ProfileOptions = Array<ProfilOption>;
 
 const search = ref("");
 const autocomplete = ref<AutocompleteInstance>();
+
+const lineData = ref<LineData | undefined>(undefined);
 
 const profileOptions: ProfileOptions = ["car", "pedestrian"];
 
@@ -181,7 +248,7 @@ const querySearch = async (q: string, cb: any) => {
 };
 
 const moveToPosition = (selectedPosition: AutoComplete) => {
-  const pointToFocus = new Point(
+  const pointToFocus = new OlPoint(
     fromLonLat(selectedPosition.feature.geometry.coordinates)
   );
 
@@ -193,7 +260,7 @@ const moveToPosition = (selectedPosition: AutoComplete) => {
 
 const centerOnCurrentPosition = () => {
   if (mapStore.currentPosition) {
-    const pointToFocus = new Point(mapStore.currentPosition);
+    const pointToFocus = new OlPoint(mapStore.currentPosition);
 
     fitExtend(pointToFocus, "housenumber");
   }
@@ -220,6 +287,51 @@ const unZoom = () => {
 const handleChangeProfile = () => {
   redrawRoute();
 };
+
+const handleAltimetryData = (altimetryLine: Elevation[]) => {
+  let newLineData: LineData = {
+    labels: [],
+    datasets: [],
+  };
+
+  let newDataSet: LineDataset = {
+    backgroundColor: "#ff5733",
+    borderColor: "#ff5733",
+    label: "Profil altimétrique",
+    data: [],
+  };
+
+  altimetryLine.forEach((altimetryPoint) => {
+    const altimetryPointKey = altimetryPoint.lon
+      .toString()
+      .concat(";")
+      .concat(altimetryPoint.lat.toString());
+
+    const pointDistance =
+      routeStore.samplePointsDistance.get(altimetryPointKey);
+
+    if (pointDistance) {
+      newLineData.labels.push(pointDistance.toString());
+      newDataSet.data.push(altimetryPoint.z);
+    }
+  });
+
+  newLineData.datasets.push(newDataSet);
+
+  lineData.value = newLineData;
+};
+
+watch(
+  () => routeStore.altimetryLine,
+  (altimetryLine) => {
+    if (altimetryLine.length === 0) {
+      lineData.value = undefined;
+      return;
+    }
+
+    handleAltimetryData(altimetryLine);
+  }
+);
 </script>
 
 <style lang="scss">
@@ -351,6 +463,27 @@ const handleChangeProfile = () => {
 
   display: flex;
   align-items: center;
+}
+
+.actions-container-bottom-center {
+  position: absolute;
+  z-index: 1000;
+
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translate(-50%, 0);
+
+  height: 250px;
+  width: fit-content;
+
+  div {
+    padding: 1rem;
+    height: 250px;
+    width: 75dvw;
+    border-radius: 15px;
+    bottom: 0;
+    background: #fff;
+  }
 }
 
 .select-label-wrapper {

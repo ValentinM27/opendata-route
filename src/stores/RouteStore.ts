@@ -9,6 +9,7 @@ export const useRouteStore = defineStore("routeStore", () => {
   const duration = ref<number | undefined>(undefined);
 
   const altimetryLine = ref<Array<Elevation>>([]);
+  const samplePointsDistance = ref<Map<string, number>>(new Map());
 
   const profile = ref<"pedestrian" | "car">("car");
 
@@ -18,7 +19,16 @@ export const useRouteStore = defineStore("routeStore", () => {
     duration.value = undefined;
     profile.value = "car";
     altimetryLine.value = [];
+    samplePointsDistance.value = new Map();
   };
 
-  return { points, distance, duration, profile, altimetryLine, reset };
+  return {
+    points,
+    distance,
+    duration,
+    profile,
+    altimetryLine,
+    samplePointsDistance,
+    reset,
+  };
 });

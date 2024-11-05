@@ -11,7 +11,7 @@ type AltimetryReduce = {
   lat: Array<number>;
   previousPoint: Coordinate | null;
   currentDistance: number;
-  samplePointsDistance: Map<String, number>;
+  samplePointsDistance: Map<string, number>;
 };
 
 export const getAltimetryLine = async (coordinates: Coordinate[]) => {
@@ -77,10 +77,14 @@ export const getAltimetryLine = async (coordinates: Coordinate[]) => {
     delimiter: "|",
     sampling: 2,
   };
+
   const elevationData = await post<ElevationData>(
     "https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest/elevationLine.json",
     locationConfig
   );
+
   const elevations = elevationData.elevations.flatMap((elevation) => elevation);
+
   useRouteStore().altimetryLine = elevations;
+  useRouteStore().samplePointsDistance = lonLat.samplePointsDistance;
 };
