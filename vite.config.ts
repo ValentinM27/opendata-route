@@ -5,4 +5,7 @@ import vue from "@vitejs/plugin-vue";
 export default defineConfig({
   plugins: [vue()],
   base: "/opendata-route/",
+  optimizeDeps: {
+    exclude: ["js-big-decimal"],
+  },
 });

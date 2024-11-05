@@ -2,22 +2,66 @@ import { Coordinate } from "ol/coordinate";
 import { transform } from "ol/proj";
 import { ElevationData, LocationConfig } from "../types/altrimetrie";
 import { post } from "./api";
-import { SAMPLE_RATE } from "../const";
 import { useRouteStore } from "../stores/RouteStore";
+import * as olSphere from "ol/sphere";
+import { SAMPLE_SIZE } from "../const";
+
+type AltimetryReduce = {
+  lon: Array<number>;
+  lat: Array<number>;
+  previousPoint: Coordinate | null;
+  currentDistance: number;
+  samplePointsDistance: Map<String, number>;
+};
 
 export const getAltimetryLine = async (coordinates: Coordinate[]) => {
-  const lonLat = coordinates.reduce(
-    (acc, curr, index) => {
-      if (index % SAMPLE_RATE === 0) {
-        const [lon, lat] = transform(curr, "EPSG:3857", "EPSG:4326");
+  // Par défaut, on prend tout les points
+  let sampleRate = 1;
 
+  // Si le nombre de points est supérieur au maximum admis alors on calcul un taux de sample ajusté
+  if (coordinates.length > SAMPLE_SIZE) {
+    sampleRate = Math.floor(coordinates.length / SAMPLE_SIZE);
+  }
+
+  const lonLat = coordinates.reduce<AltimetryReduce>(
+    (acc, curr, index) => {
+      const [lon, lat] = transform(curr, "EPSG:3857", "EPSG:4326");
+
+      // On calcule la distance du point courrant par rapport au précédent
+      // pour pouvoir lié les points du sample altimétrique à leur distance donnée
+      if (acc.previousPoint) {
+        const [prevLon, prevLat] = transform(
+          acc.previousPoint,
+          "EPSG:3857",
+          "EPSG:4326"
+        );
+
+        const distance =
+          olSphere.getDistance([prevLon, prevLat], [lon, lat]) / 1000;
+
+        acc.currentDistance += distance;
+      }
+
+      acc.previousPoint = curr;
+
+      if (index % sampleRate === 0) {
         acc.lon.push(lon);
         acc.lat.push(lat);
+
+        const lonLatKey = lon.toString().concat(";").concat(lat.toString());
+
+        acc.samplePointsDistance.set(lonLatKey, acc.currentDistance);
       }
 
       return acc;
     },
-    { lon: Array<number>(), lat: Array<number>() }
+    {
+      lon: Array<number>(),
+      lat: Array<number>(),
+      previousPoint: null,
+      currentDistance: 0,
+      samplePointsDistance: new Map(),
+    }
   );
 
   const joinedLon = lonLat.lon.join("|");
@@ -33,13 +77,10 @@ export const getAltimetryLine = async (coordinates: Coordinate[]) => {
     delimiter: "|",
     sampling: 2,
   };
-
   const elevationData = await post<ElevationData>(
     "https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest/elevationLine.json",
     locationConfig
   );
-
-  const z = elevationData.elevations.flatMap((elevation) => elevation.z);
-
-  useRouteStore().altimetryLine = z;
+  const elevations = elevationData.elevations.flatMap((elevation) => elevation);
+  useRouteStore().altimetryLine = elevations;
 };
