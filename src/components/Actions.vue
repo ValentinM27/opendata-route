@@ -135,6 +135,8 @@ import {
   Title,
   Tooltip,
   Legend,
+  ScaleOptions,
+  LinearScaleOptions,
 } from "chart.js";
 import { Line } from "vue-chartjs";
 import { Elevation } from "../types/altrimetrie";
@@ -189,12 +191,12 @@ const options = {
     },
   },
   scales: {
-    x: {
-      type: "linear" as string,
+    x: <Partial<LinearScaleOptions>>{
+      type: "linear",
       beginAtZero: true,
     },
-    y: {
-      type: "linear" as string,
+    y: <Partial<LinearScaleOptions>>{
+      type: "linear" as ScaleOptions<any>,
       beginAtZero: true,
     },
   },
