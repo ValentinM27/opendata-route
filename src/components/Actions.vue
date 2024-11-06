@@ -322,8 +322,6 @@ const handleAltimetryData = (altimetryLine: Elevation[]) => {
 
   newLineData.datasets.push(newDataSet);
 
-  console.log(routeStore.distance);
-
   options.value.scales.x = {
     ...options.value.scales.x,
     max: routeStore.distance,
