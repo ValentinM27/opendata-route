@@ -60,7 +60,7 @@
   </el-col>
   <el-col class="actions-container-bottom-center">
     <div v-if="lineData">
-      <Line :data="lineData" :options="options" />
+      <Line :data="lineData" :options="options" :key="lineKey" />
     </div>
   </el-col>
   <el-col class="actions-container-right">
@@ -178,7 +178,7 @@ type LineData = {
   datasets: LineDataset[];
 };
 
-const options = {
+const options = ref({
   maintainAspectRatio: false,
   elements: {
     point: {
@@ -200,7 +200,9 @@ const options = {
       beginAtZero: true,
     },
   },
-};
+});
+
+const lineKey = ref(0);
 
 type ProfilOption = keyof typeof icon;
 type ProfileOptions = Array<ProfilOption>;
@@ -320,7 +322,17 @@ const handleAltimetryData = (altimetryLine: Elevation[]) => {
 
   newLineData.datasets.push(newDataSet);
 
+  console.log(routeStore.distance);
+
+  options.value.scales.x = {
+    ...options.value.scales.x,
+    max: routeStore.distance,
+  };
+
   lineData.value = newLineData;
+
+  // Permet de rafraichir le graphiques
+  lineKey.value++;
 };
 
 watch(

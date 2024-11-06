@@ -44,7 +44,9 @@ export const getAltimetryLine = async (coordinates: Coordinate[]) => {
 
       acc.previousPoint = curr;
 
-      if (index % sampleRate === 0) {
+      // On retient les points tout n points en fonction du sampleRate
+      // et on conserve également le dernier point
+      if (index % sampleRate === 0 || index === coordinates.length - 1) {
         acc.lon.push(lon);
         acc.lat.push(lat);
 
