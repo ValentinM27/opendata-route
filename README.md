@@ -8,6 +8,7 @@ _Une démonstration est disponible à cette adresse_: [https://valentinm27.githu
 
 - [API Adresse](https://adresse.data.gouv.fr/api-doc/adresse#search)
 - [Géoplateforme: Service d'itinéraire et d'isochrone](https://www.geoportail.gouv.fr/depot/swagger/itineraire.html)
+- [Géoplateforme: Service de calcul altimétrique](https://data.geopf.fr/altimetrie/swagger-ui/index.html)
 
 ## Technologies
 
