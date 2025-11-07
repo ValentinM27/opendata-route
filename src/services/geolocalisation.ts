@@ -29,11 +29,7 @@ export const getCurrentLongitudeLatitude = (): Promise<number[]> => {
 export const getRoute = async (points: Point[]): Promise<Route | null> => {
   if (points.length < 2) return null;
 
-  const {
-    start: startPoint,
-    body: intermediatesPoints,
-    end: endPoint,
-  } = divideArray(points);
+  const { start: startPoint, body: intermediatesPoints, end: endPoint } = divideArray(points);
 
   const start = encodeURIComponent(startPoint[0].getCoordinates().toString());
 
@@ -45,13 +41,7 @@ export const getRoute = async (points: Point[]): Promise<Route | null> => {
 
   const end = encodeURIComponent(endPoint[0].getCoordinates().toString());
 
-  const url = getGeoplateformeUrl(
-    start,
-    end,
-    intermediates,
-    useRouteStore().profile,
-    "fastest"
-  );
+  const url = getGeoplateformeUrl(start, end, intermediates, useRouteStore().profile, "fastest");
 
   const geoportaileResponse = await getWithLoader<GeoportailRouteResponse>(url);
 
@@ -82,9 +72,7 @@ const getGeoplateformeUrl = (
   }
 };
 
-export const getAdresseReverse = async (
-  coordinates: Coordinate
-): Promise<Address | null> => {
+export const getAdresseReverse = async (coordinates: Coordinate): Promise<Address | null> => {
   const [lon, lat] = transform(coordinates, "EPSG:3857", "EPSG:4326");
 
   const res = await getWithLoader<ApiAdressResponse>(
@@ -100,10 +88,7 @@ export const getAdresseReverse = async (
   return adresse;
 };
 
-export const getAdresses = async (
-  q: string,
-  coordinates: Coordinate
-): Promise<Feature[]> => {
+export const getAdresses = async (q: string, coordinates: Coordinate): Promise<Feature[]> => {
   const [lon, lat] = transform(coordinates, "EPSG:3857", "EPSG:4326");
 
   const res = await get<ApiAdressResponse>(

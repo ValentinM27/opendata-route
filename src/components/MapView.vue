@@ -3,17 +3,17 @@
 </template>
 
 <script setup lang="ts">
-import { initMap } from "../services/map";
-import { onMounted } from "vue";
+  import { initMap } from "../services/map";
+  import { onMounted } from "vue";
 
-onMounted(() => {
-  initMap();
-});
+  onMounted(() => {
+    initMap();
+  });
 </script>
 
 <style scoped lang="scss">
-#map {
-  height: 100dvh;
-  width: 100dvw;
-}
+  #map {
+    height: 100dvh;
+    width: 100dvw;
+  }
 </style>

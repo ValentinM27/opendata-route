@@ -30,14 +30,9 @@ export const getAltimetryLine = async (coordinates: Coordinate[]) => {
       // On calcule la distance du point courrant par rapport au précédent
       // pour pouvoir lié les points du sample altimétrique à leur distance donnée
       if (acc.previousPoint) {
-        const [prevLon, prevLat] = transform(
-          acc.previousPoint,
-          "EPSG:3857",
-          "EPSG:4326"
-        );
+        const [prevLon, prevLat] = transform(acc.previousPoint, "EPSG:3857", "EPSG:4326");
 
-        const distance =
-          olSphere.getDistance([prevLon, prevLat], [lon, lat]) / 1000;
+        const distance = olSphere.getDistance([prevLon, prevLat], [lon, lat]) / 1000;
 
         acc.currentDistance += distance;
       }

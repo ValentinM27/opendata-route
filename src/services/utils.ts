@@ -17,9 +17,7 @@ export const divideArray = <T>(arr: T[]) => {
 };
 
 export const formatNumber = (number: number, fraction: number) => {
-  return Intl.NumberFormat("fr-FR", { maximumFractionDigits: fraction }).format(
-    number
-  );
+  return Intl.NumberFormat("fr-FR", { maximumFractionDigits: fraction }).format(number);
 };
 
 export const convertDurationToString = (duration: number) => {

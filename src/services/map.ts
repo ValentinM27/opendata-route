@@ -14,11 +14,7 @@ import { Fill, Style, Text } from "ol/style";
 import WMTSTileGrid from "ol/tilegrid/WMTS";
 
 import { Address, Route } from "../types/geolocalisation";
-import {
-  getAdresseReverse,
-  getCurrentLongitudeLatitude,
-  getRoute,
-} from "./geolocalisation";
+import { getAdresseReverse, getCurrentLongitudeLatitude, getRoute } from "./geolocalisation";
 
 import {
   combinedLineStyle,
@@ -101,8 +97,7 @@ const switchToOrtho = () => {
   const resolutions = [];
   const matrixIds = [];
 
-  const maxResolution =
-    getWidth(useMapStore().map!.getView().getProjection().getExtent()) / 256;
+  const maxResolution = getWidth(useMapStore().map!.getView().getProjection().getExtent()) / 256;
 
   for (let i = 0; i < 20; i++) {
     matrixIds[i] = i.toString();
@@ -150,9 +145,7 @@ const switchToOsm = () => {
   useMapStore().currentMapLayer = "osm";
 };
 
-const getOrCreateLayer = <T extends VectorLayer & BaseLayer>(
-  name: string
-): T => {
+const getOrCreateLayer = <T extends VectorLayer & BaseLayer>(name: string): T => {
   const currentLayer = useMapStore()
     .map?.getLayers()
     .getArray()

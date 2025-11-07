@@ -36,13 +36,8 @@ export const post = async <T>(url: string, body: Object): Promise<T> => {
     });
 };
 
-export const postWithLoader = async <T>(
-  url: string,
-  body: Object
-): Promise<T> => {
+export const postWithLoader = async <T>(url: string, body: Object): Promise<T> => {
   const loading = ElLoading.service();
 
-  return post<T>(url, body).finally(() =>
-    setTimeout(() => loading.close(), 200)
-  );
+  return post<T>(url, body).finally(() => setTimeout(() => loading.close(), 200));
 };
