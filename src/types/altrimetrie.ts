@@ -6,7 +6,6 @@ export type LocationConfig = {
   indent: "true" | "false";
   profile_mode: "simple" | "detailed";
   measures: "true" | "false";
-  sampling: number;
 };
 
 export type ElevationData = {

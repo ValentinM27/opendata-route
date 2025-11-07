@@ -72,11 +72,10 @@ export const getAltimetryLine = async (coordinates: Coordinate[]) => {
     resource: "ign_rge_alti_wld",
     profile_mode: "simple",
     delimiter: "|",
-    sampling: 2,
   };
 
   const elevationData = await post<ElevationData>(
-    "https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest/elevationLine.json",
+    "https://data.geopf.fr/altimetrie/1.0/calcul/alti/rest/elevation.json",
     locationConfig
   );
 
